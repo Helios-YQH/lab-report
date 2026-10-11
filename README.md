@@ -11,7 +11,7 @@
 | **1 转录** | 照片切块放大后逐个读数，认不清直接问用户 |
 | **2 核对** | 确认前不进入计算 |
 | **3 处理** | 生成 `处理.py`：零点修正、逐差法、不确定度传递、作图法／最小二乘法，并出图 |
-| **4 报告** | 写成 Typst，编译成 PDF |
+| **4 报告** | 按课程模板写成 LaTeX，编译成 PDF |
 | **5 审阅** | 开 subagent 攻击**AI味文风** |
 
 
@@ -23,7 +23,8 @@ lab-data-workflow/
   scripts/prep_photo.py  照片预处理：总览／转正／切半／裁切放大／补光
   scripts/csv_tables.py  带分段标记的原始数据 CSV 读写
   scripts/to_utf8.py     GBK → UTF-8 BOM（解决 Excel 中文 CSV 乱码）
-  templates/report.typ   Typst 报告模板（三线表、公式编号、中文字体）
+  templates/report.tex   LaTeX 报告模板（课程官方格式：报告头、三线表、图、公式编号）
+  templates/report.typ   Typst 备选模板（不套课程模板时用）
 ```
 
 ## 安装
@@ -38,7 +39,8 @@ cp -r lab-report/lab-data-workflow <你的项目>/.claude/skills/
 
 ## 依赖
 
-Python 3（Pillow、numpy、matplotlib）、[Typst](https://typst.app)。
+Python 3（Pillow、numpy、matplotlib）、XeLaTeX（TeX Live／MiKTeX；字体默认用系统 `SimHei` + `Palatino Linotype`）。
+备选的 Typst 路线另需 [Typst](https://typst.app)。
 
 ## 说明
 
