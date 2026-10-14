@@ -6,7 +6,8 @@ description: 物理实验数据全流程——手写记录纸照片转录成原�
 # 物理实验数据处理流程
 
 一个实验 = `<unit>` 下的一个子文件夹（如 `1.杨氏模量/`），数据放它的 `实验数据/` 子目录。
-本 skill 的脚本在 `.claude/skills/lab-data-workflow/scripts/`，模板在 `templates/`。
+本 skill 的脚本在 `.agents/skills/lab-data-workflow/scripts/`，模板在 `templates/`。
+Claude Code 从 `<unit>/.claude/skills/lab-data-workflow/SKILL.md` 这个入口转到这里；正文、脚本、模板全局只有这一份。
 **下面所有路径都相对 `<unit>`**（即 `D:\文件\教材\物理实验`）。
 
 ## 现在该做哪一步
@@ -29,17 +30,17 @@ description: 物理实验数据全流程——手写记录纸照片转录成原�
 
 ```bash
 # 总览：看版面有哪几张表、有没有转 90 度
-python .claude/skills/lab-data-workflow/scripts/prep_photo.py 照片.jpg
+python .agents/skills/lab-data-workflow/scripts/prep_photo.py 照片.jpg
 
 # 照片躺倒时转正（--rotate 走的是 PIL 的逆时针角度，im.rotate(90) 就是逆时针 90°）
 # 躺倒的照片先试 90，出来还是躺的就试 -90
-python .claude/skills/lab-data-workflow/scripts/prep_photo.py 照片.jpg --rotate 90 --split
+python .agents/skills/lab-data-workflow/scripts/prep_photo.py 照片.jpg --rotate 90 --split
 
 # 放大某张表：坐标在总览图上量，单位是原图像素
-python .claude/skills/lab-data-workflow/scripts/prep_photo.py 照片.jpg --rotate 90 --crop 330,1600,1760,1850 --zoom 1.6
+python .agents/skills/lab-data-workflow/scripts/prep_photo.py 照片.jpg --rotate 90 --crop 330,1600,1760,1850 --zoom 1.6
 
 # 字迹淡/照片发灰时加 --region autolevel（去背景+提对比度，效果很明显）
-python .claude/skills/lab-data-workflow/scripts/prep_photo.py 照片.jpg --crop 430,1330,2960,1960 --zoom 1.2 --region autolevel
+python .agents/skills/lab-data-workflow/scripts/prep_photo.py 照片.jpg --crop 430,1330,2960,1960 --zoom 1.2 --region autolevel
 ```
 
 产物写到照片同目录的 `_prep/`。**裁切是唯一可靠的办法**——一眼扫过去读宏观表，数字一律靠裁切图逐个确认。
@@ -56,15 +57,15 @@ python .claude/skills/lab-data-workflow/scripts/prep_photo.py 照片.jpg --crop 
 
 ```bash
 # 检查/转换编码：Excel 中文版另存的是 GBK，其它工具打开乱码
-python .claude/skills/lab-data-workflow/scripts/to_utf8.py --check 1.杨氏模量/实验数据/
-python .claude/skills/lab-data-workflow/scripts/to_utf8.py 1.杨氏模量/实验数据/   # 就地转 UTF-8 BOM，原文件备份 .gbk.bak
-python .claude/skills/lab-data-workflow/scripts/to_utf8.py --clean 1.杨氏模量/实验数据/   # 确认无误后删备份
+python .agents/skills/lab-data-workflow/scripts/to_utf8.py --check 1.杨氏模量/实验数据/
+python .agents/skills/lab-data-workflow/scripts/to_utf8.py 1.杨氏模量/实验数据/   # 就地转 UTF-8 BOM，原文件备份 .gbk.bak
+python .agents/skills/lab-data-workflow/scripts/to_utf8.py --clean 1.杨氏模量/实验数据/   # 确认无误后删备份
 ```
 
 用 `csv_tables.py` 写，它自动加 BOM + CRLF：
 
 ```python
-import sys; sys.path.insert(0, r'.claude/skills/lab-data-workflow/scripts')
+import sys; sys.path.insert(0, r'.agents/skills/lab-data-workflow/scripts')
 import csv_tables as ct
 
 ct.write('1.杨氏模量/实验数据/2_霍尔法.csv',
@@ -80,7 +81,7 @@ ct.write('1.杨氏模量/实验数据/2_霍尔法.csv',
 
 ```bash
 # 检查写完的 CSV 能不能正确解析
-python .claude/skills/lab-data-workflow/scripts/csv_tables.py 1.杨氏模量/实验数据/2_霍尔法.csv
+python .agents/skills/lab-data-workflow/scripts/csv_tables.py 1.杨氏模量/实验数据/2_霍尔法.csv
 ```
 
 **CSV 里只存记录纸上的手写原值，不做任何单位换算。** 零点修正、单位换算全部留给 §3 的脚本。
@@ -155,7 +156,7 @@ Z_PLUS = 100.0                      # 鼓轮过一圈, 旁注 "(+100)"
 
 ```bash
 # 从模板起步
-cp .claude/skills/lab-data-workflow/templates/report.tex 1.杨氏模量/实验数据/实验报告.tex
+cp .agents/skills/lab-data-workflow/templates/report.tex 1.杨氏模量/实验数据/实验报告.tex
 # 改内容，然后编译（跑两遍，交叉引用/页码才准）
 cd 1.杨氏模量/实验数据 && xelatex 实验报告.tex && xelatex 实验报告.tex
 ```

@@ -1,8 +1,8 @@
 # lab-report
 
-面向 AI agent的 skill，实现大学物理实验的**手写记录纸照片 → 电子原始数据 → 计算 → 报告 PDF** 链路自动化。
+面向 AI agent 的 skill，实现大学物理实验的**手写记录纸照片 → 电子原始数据 → 计算 → 报告 PDF** 链路自动化。
 
-做 UCAS 基础物理实验时需要，总结成 skill 自用。
+做 UCAS 基础物理实验时需要，总结成 skill 自用。Codex 与 Claude Code 都能用。
 
 ## 工作流程
 
@@ -29,13 +29,43 @@ lab-data-workflow/
 
 ## 安装
 
+Codex 只扫 `.agents/skills`，Claude Code 只扫 `.claude/skills`，两个目录默认互不可见。按你实际用的 agent 装到对应位置：
+
 ```bash
 git clone https://github.com/Helios-YQH/lab-report.git
+
+# Codex
+mkdir -p <你的项目>/.agents/skills
+cp -r lab-report/lab-data-workflow <你的项目>/.agents/skills/
+
+# Claude Code
 mkdir -p <你的项目>/.claude/skills
 cp -r lab-report/lab-data-workflow <你的项目>/.claude/skills/
 ```
 
-之后在项目里说"录入实验数据""处理实验数据""写实验报告"就会自动加载。（或让AI agent自行安装）
+### 两个 agent 共用一份（推荐）
+
+正文、脚本、模板只留一份在 `.agents/skills/`，再给 Claude Code 放一个入口文件指过去，避免两份正文各自漂移。
+
+```bash
+mkdir -p <你的项目>/.agents/skills <你的项目>/.claude/skills/lab-data-workflow
+cp -r lab-report/lab-data-workflow <你的项目>/.agents/skills/
+```
+
+然后把下面这段写进 `<你的项目>/.claude/skills/lab-data-workflow/SKILL.md`：
+
+```markdown
+---
+name: lab-data-workflow
+description: 物理实验数据全流程——手写记录纸照片转录成原始数据 CSV、逐项核对、写处理脚本算结果出图、生成实验报告与 PDF。当用户说"录入实验数据""处理实验数据""写实验报告""实验数据出图/出 PDF""把手写的记下来""数据誊录"时使用。
+---
+
+正文在 `.agents/skills/lab-data-workflow/SKILL.md`，先完整读取它再执行。
+```
+
+之后在项目里说"录入实验数据""处理实验数据""写实验报告"就会自动加载。显式调用：Codex 用 `$lab-data-workflow`，Claude Code 用 `/skills`。Codex 会自动发现新增的 skill，没生效就重开一个对话。
+
+也可以直接让 AI agent 按上面的结构自己装。
 
 ## 依赖
 
